@@ -72,6 +72,8 @@ echo "► 下载 FRP 文件..."
 # 格式: https://github.com/<用户名>/<仓库名>/trunk/<文件夹路径>
 git clone https://github.com/ShmilyAbyss/frp.git /usr/local/share/frp
 echo "✓ 下载完成"
+cd /usr/local/share/frp/frp_0.62.1_linux_amd64
+chmod +x frp
 
 # 运行交互式配置
 configure_frp
