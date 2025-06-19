@@ -69,10 +69,30 @@ echo "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀�
 sudo mkdir -p /usr/local/share/frp
 
 TARGET_ARCH="amd64"
-BINARY_URL="https://github.com/ShmilyAbyss/frp.git"
+# 设置要下载的 GitHub 仓库和特定文件夹路径
+GIT_REPO="https://github.com/ShmilyAbyss/frp.git"
+TARGET_FOLDER="frp_0.62.1_linux_amd64"  # 修改为你需要的文件夹路径
+BRANCH="main"        # 修改为你的分支名（main/master等）
 
 echo "► 下载 FRP 二进制文件..."
-curl -Lo /tmp/frps_custom $BINARY_URL
+# 创建临时目录
+TEMP_DIR=$(mktemp -d)
+
+# 使用 sparse-checkout 只下载特定文件夹
+git clone --depth 1 --filter=blob:none --no-checkout "$GIT_REPO" "$TEMP_DIR"
+cd "$TEMP_DIR"
+git sparse-checkout init --cone
+git sparse-checkout set "$TARGET_FOLDER"
+git checkout $BRANCH
+
+# 移动到目标位置
+sudo mkdir -p /usr/local/share/frp
+sudo cp -r "$TARGET_FOLDER"/* /usr/local/share/frp/
+
+# 清理临时目录
+cd -
+rm -rf "$TEMP_DIR"
+
 echo "✓ 下载完成"
 
 # 添加文件验证 (可选)
