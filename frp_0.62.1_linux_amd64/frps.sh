@@ -9,7 +9,7 @@ configure_frp() {
     echo "└──────────────────────────────────────────┘"
     
     # 设置默认值
-    local DEFAULT_BIND_PORT=8001
+    local DEFAULT_BIND_PORT=7000
     local DEFAULT_TOKEN=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)
     local DEFAULT_DASHBOARD_PORT=7500
     
@@ -40,7 +40,7 @@ configure_frp() {
     fi
 
     # 生成TOML配置文件
-    sudo tee /usr/local/share/frps.toml > /dev/null <<EOF
+    sudo tee /usr/local/share/frp/frps.toml > /dev/null <<EOF
 # FRP 服务器配置 (由安装脚本生成)
 bindPort = $BIND_PORT
 auth.token = "$TOKEN"
@@ -49,7 +49,7 @@ auth.token = "$TOKEN"
 EOF
 
     if [ -n "$DASHBOARD_PORT" ]; then
-        sudo tee -a /usr/local/share/frps.toml > /dev/null <<EOF
+        sudo tee -a /usr/local/share/frp/frps.toml > /dev/null <<EOF
 webServer.addr = "0.0.0.0"
 webServer.port = $DASHBOARD_PORT
 webServer.user = "$DASHBOARD_USER"
@@ -57,7 +57,7 @@ webServer.password = "$DASHBOARD_PWD"
 EOF
     fi
 
-    echo -e "\n✔ 配置文件已生成: /usr/local/share/frps.toml"
+    echo -e "\n✔ 配置文件已生成: /usr/local/share/frp/frps.toml"
 }
 
 # 主安装流程
@@ -69,41 +69,11 @@ echo "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀�
 sudo mkdir -p /usr/local/share/frp
 
 TARGET_ARCH="amd64"
-# 设置要下载的 GitHub 仓库和特定文件夹路径
-GIT_REPO="https://github.com/ShmilyAbyss/frp.git"
-TARGET_FOLDER="frp_0.62.1_linux_amd64"  # 修改为你需要的文件夹路径
-BRANCH="main"        # 修改为你的分支名（main/master等）
-
-echo "► 下载 FRP 二进制文件..."
-# 创建临时目录
-TEMP_DIR=$(mktemp -d)
-
-# 使用 sparse-checkout 只下载特定文件夹
-git clone --depth 1 --filter=blob:none --no-checkout "$GIT_REPO" "$TEMP_DIR"
-cd "$TEMP_DIR"
-git sparse-checkout init --cone
-git sparse-checkout set "$TARGET_FOLDER"
-git checkout $BRANCH
-
-# 移动到目标位置
-sudo mkdir -p /usr/local/share/frp
-sudo cp -r "$TARGET_FOLDER"/* /usr/local/share/frp/
-
-# 清理临时目录
-cd -
-rm -rf "$TEMP_DIR"
-
+echo "► 下载 FRP 文件..."
+# 2. 下载特定文件夹
+# 格式: https://github.com/<用户名>/<仓库名>/trunk/<文件夹路径>
+git clone https://github.com/ShmilyAbyss/frp.git /usr/local/share/frp
 echo "✓ 下载完成"
-
-# 添加文件验证 (可选)
-# echo "► 验证文件完整性..."
-# echo "预期校验值" | sha256sum -c --strict - || { echo "✗ 校验失败"; exit 1; }
-# echo "✓ 文件验证通过"
-
-echo "► 安装二进制文件..."
-sudo install -m 755 /tmp/frps_custom /usr/local/share/frp/frps
-rm -f /tmp/frps_custom
-echo "✓ 安装完成"
 
 # 运行交互式配置
 configure_frp
@@ -115,7 +85,7 @@ Description=Frp Server
 After=network.target
 
 [Service]
-ExecStart=/usr/local/share/frp/frps -c /usr/local/share/frps.toml
+ExecStart=cd /usr/local/share/frp ./frps -c /usr/local/share/frp/frps.toml
 Restart=on-failure
 RestartSec=5s
 User=root
