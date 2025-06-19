@@ -9,7 +9,6 @@ configure_frp() {
     # 设置默认值
     local DEFAULT_BIND_PORT=7000
     local DEFAULT_DASHBOARD_PORT=7500
-    
     # 获取用户输入
     read -p "► 输入FRP服务端口 [$DEFAULT_BIND_PORT]: " BIND_PORT
     BIND_PORT=${BIND_PORT:-$DEFAULT_BIND_PORT}
