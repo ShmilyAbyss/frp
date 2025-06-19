@@ -8,15 +8,11 @@ configure_frp() {
     
     # 设置默认值
     local DEFAULT_BIND_PORT=7000
-    local DEFAULT_TOKEN=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 32)
     local DEFAULT_DASHBOARD_PORT=7500
     
     # 获取用户输入
     read -p "► 输入FRP服务端口 [$DEFAULT_BIND_PORT]: " BIND_PORT
     BIND_PORT=${BIND_PORT:-$DEFAULT_BIND_PORT}
-    
-    read -p "► 输入认证Token(建议随机) [$DEFAULT_TOKEN]: " TOKEN
-    TOKEN=${TOKEN:-$DEFAULT_TOKEN}
     
     read -p "► 启用Web控制台? (y/n) [y]: " ENABLE_DASHBOARD
     ENABLE_DASHBOARD=${ENABLE_DASHBOARD:-y}
@@ -41,7 +37,6 @@ configure_frp() {
     sudo tee /usr/local/share/frp/frp_0.62.1_linux_amd64/frps.toml > /dev/null <<EOF
 # FRP 服务器配置 (由安装脚本生成)
 bindPort = $BIND_PORT
-auth.token = "$TOKEN"
 
 # Web控制台配置
 EOF
@@ -72,6 +67,8 @@ echo "► 下载 FRP 文件..."
 # 格式: https://github.com/<用户名>/<仓库名>/trunk/<文件夹路径>
 git clone https://github.com/ShmilyAbyss/frp.git /usr/local/share/frp
 echo "✓ 下载完成"
+cd /usr/local/share/frp/frp_0.62.1_linux_amd64
+chmod +x frp
 
 # 运行交互式配置
 configure_frp
