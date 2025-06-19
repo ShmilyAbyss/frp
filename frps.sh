@@ -38,7 +38,7 @@ configure_frp() {
     fi
 
     # 生成TOML配置文件
-    sudo tee /usr/local/share/frp/frps.toml > /dev/null <<EOF
+    sudo tee /usr/local/share/frp/frp_0.62.1_linux_amd64/frps.toml > /dev/null <<EOF
 # FRP 服务器配置 (由安装脚本生成)
 bindPort = $BIND_PORT
 auth.token = "$TOKEN"
@@ -47,7 +47,7 @@ auth.token = "$TOKEN"
 EOF
 
     if [ -n "$DASHBOARD_PORT" ]; then
-        sudo tee -a /usr/local/share/frp/frps.toml > /dev/null <<EOF
+        sudo tee -a /usr/local/share/frp/frp_0.62.1_linux_amd64/frps.toml > /dev/null <<EOF
 webServer.addr = "0.0.0.0"
 webServer.port = $DASHBOARD_PORT
 webServer.user = "$DASHBOARD_USER"
@@ -55,7 +55,7 @@ webServer.password = "$DASHBOARD_PWD"
 EOF
     fi
 
-    echo -e "\n✔ 配置文件已生成: /usr/local/share/frp/frps.toml"
+    echo -e "\n✔ 配置文件已生成: /usr/local/share/frp/frp_0.62.1_linux_amd64/frps.toml"
 }
 
 # 主安装流程
@@ -83,7 +83,7 @@ Description=Frp Server
 After=network.target
 
 [Service]
-ExecStart=cd /usr/local/share/frp ./frps -c /usr/local/share/frp/frps.toml
+ExecStart=cd /usr/local/share/frp/frp_0.62.1_linux_amd64 ./frps -c /usr/local/share/frp/frp_0.62.1_linux_amd64/frps.toml
 Restart=on-failure
 RestartSec=5s
 User=root
