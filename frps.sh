@@ -1,7 +1,5 @@
 #!/bin/bash
 # 自定义frp安装脚本 (保存为 install_frp.sh)
-set -e
-
 # 交互式配置函数
 configure_frp() {
     echo "┌──────────────────────────────────────────┐"
