@@ -1,0 +1,24 @@
+serverAddr = ""
+serverPort = 9001
+
+[[proxies]]
+name = "Minecraft"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 25565
+remotePort = 25565
+
+[[proxies]]
+name = "Map"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 8123
+remotePort = 8123
+
+[[proxies]]
+name = "Rdp"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 3389
+remotePort = 3389
+
